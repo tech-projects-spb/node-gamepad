@@ -83,6 +83,7 @@ static void disposeDevice(struct Gamepad_device * device) {
 	free(((struct Gamepad_devicePrivate *) device->privateData)->path);
 	free(device->privateData);
 	
+	free((void *) device->deviceID);
 	free((void *) device->description);
 	free(device->axisStates);
 	free(device->buttonStates);
@@ -325,7 +326,10 @@ void Gamepad_detectDevices() {
 				}
 				
 				deviceRecord = malloc(sizeof(struct Gamepad_device));
-				deviceRecord->deviceID = nextDeviceID++;
+
+				deviceRecord->deviceID = malloc(strlen(entity->d_name) + 1);
+				strcpy(deviceRecord->deviceID, entity->d_name);
+
 				devices = realloc(devices, sizeof(struct Gamepad_device *) * (numDevices + 1));
 				devices[numDevices++] = deviceRecord;
 				
