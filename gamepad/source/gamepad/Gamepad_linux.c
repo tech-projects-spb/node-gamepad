@@ -327,9 +327,14 @@ void Gamepad_detectDevices() {
 				
 				deviceRecord = malloc(sizeof(struct Gamepad_device));
 
-				deviceRecord->deviceID = malloc(strlen(entity->d_name) + 1);
-				strcpy(deviceRecord->deviceID, entity->d_name);
-
+				if (ioctl(fd, EVIOCGPHYS(sizeof(name)), name) > 0) {
+					deviceRecord->deviceID = malloc(strlen(name) + 1);
+					strcpy(deviceRecord->deviceID, name);
+				} else {
+					deviceRecord->deviceID = malloc(strlen(entity->d_name) + 1);
+					strcpy(deviceRecord->deviceID, entity->d_name);
+				}
+				
 				devices = realloc(devices, sizeof(struct Gamepad_device *) * (numDevices + 1));
 				devices[numDevices++] = deviceRecord;
 				
